@@ -3,17 +3,21 @@ document.addEventListener("DOMContentLoaded", function () {
   const taskInput = document.getElementById("task-input");
   const taskList = document.getElementById("task-list");
 
-  function addTask() {
-    const taskText = taskInput.value.trim();
+  loadTasks();
 
-    if (taskText === "") {
+  function loadTasks() {
+    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+    storedTasks.forEach((taskText) => addTask(taskText, false));
+  }
+
+  function addTask(taskText, save = true) {
+    if (taskText.trim() === "") {
       alert("Please enter a task.");
       return;
     }
 
     const listItem = document.createElement("li");
     listItem.textContent = taskText;
-
     listItem.classList.add("task-item");
 
     const removeButton = document.createElement("button");
@@ -22,19 +26,40 @@ document.addEventListener("DOMContentLoaded", function () {
 
     removeButton.onclick = function () {
       taskList.removeChild(listItem);
+      removeTaskFromStorage(taskText);
     };
 
     listItem.appendChild(removeButton);
     taskList.appendChild(listItem);
 
+    if (save) {
+      saveTaskToStorage(taskText);
+    }
+
     taskInput.value = "";
   }
 
-  addButton.addEventListener("click", addTask);
+  function saveTaskToStorage(taskText) {
+    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+    storedTasks.push(taskText);
+    localStorage.setItem("tasks", JSON.stringify(storedTasks));
+  }
+
+  function removeTaskFromStorage(taskText) {
+    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+    const updatedTasks = storedTasks.filter((task) => task !== taskText);
+    localStorage.setItem("tasks", JSON.stringify(updatedTasks));
+  }
+
+  addButton.addEventListener("click", function () {
+    const taskText = taskInput.value.trim();
+    addTask(taskText);
+  });
 
   taskInput.addEventListener("keypress", function (event) {
     if (event.key === "Enter") {
-      addTask();
+      const taskText = taskInput.value.trim();
+      addTask(taskText);
     }
   });
 });
