@@ -3,12 +3,10 @@ document.addEventListener("DOMContentLoaded", function () {
   const taskInput = document.getElementById("task-input");
   const taskList = document.getElementById("task-list");
 
-  loadTasks();
-
-  function loadTasks() {
-    const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
-    storedTasks.forEach((taskText) => addTask(taskText, false));
-  }
+  const storedTasks = JSON.parse(localStorage.getItem("tasks") || "[]");
+  storedTasks.forEach((taskText) => {
+    addTask(taskText, false);
+  });
 
   function addTask(taskText, save = true) {
     if (taskText.trim() === "") {
